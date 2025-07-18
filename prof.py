@@ -187,8 +187,6 @@ def envoyer_audio_whatsapp(recipient_number, audio_content):
     if media_id:
         envoyer_audio_whatsapp_par_media_id(recipient_number, media_id)
 
-# Configurer vos clés API
-#OPENAI_API_KEY = 'sk-proj-ny7CkvciaWV2wCcRhncjT3BlbkFJBeXDErEBUTliV3UGcEEl'
 
 # Configurer les points d'accès API
 WHISPER_ENDPOINT = 'https://api.openai.com/v1/audio/transcriptions'
