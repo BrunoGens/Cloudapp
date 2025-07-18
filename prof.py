@@ -154,7 +154,9 @@ def uploader_audio_sur_facebook(audio_content):
         print("Code d'erreur:", response.status_code)
         print("Réponse de l'API:", response.json())
         return None
-    
+
+
+#Commentaire 
 def envoyer_audio_whatsapp_par_media_id(numero, media_id):
     headers = {
         'Authorization': f'Bearer {WHATSAPP_API_TOKEN}',
