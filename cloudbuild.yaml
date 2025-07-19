@@ -3,7 +3,7 @@ steps:
   args: ['build', '-t', 'gcr.io/$myprojectlmc/hello', '.']
 
 options:
-  logging: CLOUD_LOGGING_ONLY
+  logging: NONE
 
 images:
 - 'gcr.io/$myprojectlmc/hello'
