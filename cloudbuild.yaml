@@ -4,8 +4,6 @@ steps:
 
 options:
   logging: NONE
-  pool:
-    name: 'projects/$PROJECT_ID/locations/europe-west9/workerPools/default' # Spécifiez une région différente
 
 images:
 - 'gcr.io/$PROJECT_ID/hello'
