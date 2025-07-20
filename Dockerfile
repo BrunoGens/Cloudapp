@@ -1,17 +1,17 @@
-# Utiliser une image de base officielle Python
+# Image de base légère Python
 FROM python:3.9-slim
 
-# Définir le répertoire de travail dans le conteneur
+# Définir le dossier de travail
 WORKDIR /app
 
-# Copier les fichiers de l'application dans le conteneur
+# Copier les fichiers dans le conteneur
 COPY . .
 
 # Installer les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Exposer le port sur lequel l'application s'exécute
+# Exposer le port attendu par Cloud Run
 EXPOSE 8080
 
-# Commande pour exécuter l'application
+# Démarrer l'application
 CMD ["python", "prof.py"]
