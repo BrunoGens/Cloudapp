@@ -297,17 +297,14 @@ def verify_webhook():
 
     if mode and token:
         if mode == "subscribe" and token == VERIFY_TOKEN:
-            message = f"Webhook vérifié avec succès. Challenge: {challenge}"
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 200
+            print("Webhook vérifié avec succès")
+            return challenge, 200, {'Content-Type': 'text/plain'}  # Assurez-vous de renvoyer le challenge tel quel
         else:
-            message = "Échec de vérification du webhook : token incorrect."
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 403
+            print("Échec de vérification du webhook")
+            return "Forbidden", 403
     else:
-        message = "Paramètres manquants dans la requête."
-        print(message)
-        return f"<html><body><h1>{message}</h1></body></html>", 400
+        print("Paramètres manquants dans la requête")
+        return "Bad Request", 400
 # def verify_webhook():
 #     mode = request.args.get("hub.mode")
 #     token = request.args.get("hub.verify_token")
