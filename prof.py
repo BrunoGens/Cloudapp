@@ -287,20 +287,6 @@ def home():
 
 VERIFY_TOKEN = "ABCD"  
 
-@app.route("/webhook", methods=["GET"])
-def verify_webhook():
-    # Récupère les paramètres de la requête GET
-    mode = request.args.get("hub.mode")
-    token = request.args.get("hub.verify_token")
-    challenge = request.args.get("hub.challenge")
-
-    # Vérifie que le mode est correct et que le token correspond
-    if mode == "subscribe" and token == VERIFY_TOKEN:
-        print("Webhook vérifié avec succès")
-        return challenge, 200  # Retourne le challenge pour valider le webhook
-    else:
-        print("Échec de vérification du webhook")
-        return "Forbidden", 403  # Erreur si le token ne correspond pas
 
   
 @app.route("/webhook", methods=["GET"])
