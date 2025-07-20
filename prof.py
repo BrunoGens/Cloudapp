@@ -297,14 +297,32 @@ def verify_webhook():
 
     if mode and token:
         if mode == "subscribe" and token == VERIFY_TOKEN:
-            print("Webhook vérifié avec succès")
-            return f"Webhook vérifié avec succès. Challenge: {challenge}", 200
+            message = f"Webhook vérifié avec succès. Challenge: {challenge}"
+            print(message)
+            return f"<html><body><h1>{message}</h1></body></html>", 200
         else:
-            print("Échec de vérification du webhook")
-            return "Échec de vérification du webhook : token incorrect.", 403
+            message = "Échec de vérification du webhook : token incorrect."
+            print(message)
+            return f"<html><body><h1>{message}</h1></body></html>", 403
     else:
-        print("Paramètres manquants dans la requête")
-        return "Paramètres manquants dans la requête.", 400
+        message = "Paramètres manquants dans la requête."
+        print(message)
+        return f"<html><body><h1>{message}</h1></body></html>", 400
+# def verify_webhook():
+#     mode = request.args.get("hub.mode")
+#     token = request.args.get("hub.verify_token")
+#     challenge = request.args.get("hub.challenge")
+
+#     if mode and token:
+#         if mode == "subscribe" and token == VERIFY_TOKEN:
+#             print("Webhook vérifié avec succès")
+#             return f"Webhook vérifié avec succès. Challenge: {challenge}", 200
+#         else:
+#             print("Échec de vérification du webhook")
+#             return "Échec de vérification du webhook : token incorrect.", 403
+#     else:
+#         print("Paramètres manquants dans la requête")
+#         return "Paramètres manquants dans la requête.", 400
 
     
 @app.route('/webhook', methods=['POST'])
