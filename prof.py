@@ -303,6 +303,24 @@ def verify_webhook():
         return "Forbidden", 403  # Erreur si le token ne correspond pas
 
   
+@app.route("/webhook", methods=["GET"])
+def verify_webhook():
+    mode = request.args.get("hub.mode")
+    token = request.args.get("hub.verify_token")
+    challenge = request.args.get("hub.challenge")
+
+    if mode and token:
+        if mode == "subscribe" and token == VERIFY_TOKEN:
+            print("Webhook vérifié avec succès")
+            return f"Webhook vérifié avec succès. Challenge: {challenge}", 200
+        else:
+            print("Échec de vérification du webhook")
+            return "Échec de vérification du webhook : token incorrect.", 403
+    else:
+        print("Paramètres manquants dans la requête")
+        return "Paramètres manquants dans la requête.", 400
+
+    
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
@@ -375,5 +393,5 @@ def webhook():
 
 
 if __name__ == '__main__':
-    app.run(port=5000)
+    app.run(port=8080)
 
