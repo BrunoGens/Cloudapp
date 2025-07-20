@@ -1,7 +1,10 @@
-from flask import Flask
+from flask import Flask, request
 import os
 
+
 app = Flask(__name__)
+
+VERIFY_TOKEN = "ABCD"  # Assurez-vous que cela correspond à votre token de vérification
 
 @app.route('/')
 def home():
