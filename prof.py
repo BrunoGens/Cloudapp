@@ -1,37 +1,26 @@
 from flask import Flask, request
 import os
 
-
 app = Flask(__name__)
 
-VERIFY_TOKEN = "ABCD"  # Assurez-vous que cela correspond à votre token de vérification
+VERIFY_TOKEN = os.environ.get("VERIFY_TOKEN", "default_token")
 
 @app.route('/')
 def home():
     return "Hello, World!"
 
-
-
-  
-@app.route("/webhook", methods=["GET"])
+@app.route('/webhook', methods=['GET'])
 def verify_webhook():
-    mode = request.args.get("hub.mode")
-    token = request.args.get("hub.verify_token")
-    challenge = request.args.get("hub.challenge")
+    mode = request.args.get('hub.mode')
+    token = request.args.get('hub.verify_token')
+    challenge = request.args.get('hub.challenge')
 
     if mode and token:
         if mode == "subscribe" and token == VERIFY_TOKEN:
-            message = f"Webhook vérifié avec succès. Challenge: {challenge}"
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 200
+            return f"Webhook vérifié. Challenge: {challenge}", 200
         else:
-            message = "Échec de vérification du webhook : token incorrect."
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 403
-    else:
-        message = "Paramètres manquants dans la requête."
-        print(message)
-        return f"<html><body><h1>{message}"
+            return "Token incorrect", 403
+    return "Paramètres manquants", 400
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
