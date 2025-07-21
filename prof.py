@@ -15,7 +15,41 @@ from io import BytesIO
 from datetime import datetime
 import sys
 sys.stdout.reconfigure(line_buffering=True)
+from google.cloud import storage
 
+BUCKET_NAME = "prof_lang_memory_bucket"
+FICHIER = "FichierTest.txt"
+
+def upload_text(content, fichier):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+    blob.upload_from_string(content)
+
+def download_text(fichier):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+    if not blob.exists():
+        return ""
+    return blob.download_as_text()
+
+def append_text_to_file(fichier: str, new_content: str):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+
+    # Télécharger l'ancien contenu s'il existe
+    if blob.exists():
+        old_content = blob.download_as_text()
+    else:
+        old_content = ""
+
+    # Ajouter le nouveau contenu à la fin
+    updated_content = old_content + new_content
+
+    # Réécrire le fichier avec le contenu mis à jour
+    blob.upload_from_string(updated_content)
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
@@ -276,8 +310,14 @@ def conversation_italien(audio_url):
     tts.write_to_fp(audio_buffer)  # Écriture directe dans le buffer
     audio_buffer.seek(0)  # Revenir au début du buffer pour la lecture
 
-    # chemin_fichier = f"{rep}-Italiano-{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3"  # Spécifiez ici l'emplacement souhaité
-    # tts.save(chemin_fichier)
+    # chemin_fichier = "FichierTest" # Spécifiez ici l'emplacement souhaité  
+    print(f"Contenu fichier Test : {download_text(FICHIER)}")
+    text = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')} - {italian_response}"  # Spécifiez ici l'emplacement souhaité
+    print(f"Ajout du texte : {text}")
+    append_text_to_file(FICHIER, text)
+    
+    print(f"nouveau Contenu fichier Test : {download_text(FICHIER)}")
+
     # print(f"Le fichier audio a été enregistré à l'emplacement : {chemin_fichier}")
     
     # Retourner la transcription et le contenu audio généré
@@ -308,21 +348,7 @@ def verify_webhook():
     else:
         print("Paramètres manquants dans la requête")
         return "Bad Request", 400
-# def verify_webhook():
-#     mode = request.args.get("hub.mode")
-#     token = request.args.get("hub.verify_token")
-#     challenge = request.args.get("hub.challenge")
 
-#     if mode and token:
-#         if mode == "subscribe" and token == VERIFY_TOKEN:
-#             print("Webhook vérifié avec succès")
-#             return f"Webhook vérifié avec succès. Challenge: {challenge}", 200
-#         else:
-#             print("Échec de vérification du webhook")
-#             return "Échec de vérification du webhook : token incorrect.", 403
-#     else:
-#         print("Paramètres manquants dans la requête")
-#         return "Paramètres manquants dans la requête.", 400
 
     
 @app.route('/webhook', methods=['POST'])

@@ -193,7 +193,7 @@ def envoyer_audio_whatsapp(recipient_number, audio_content):
 # Configurer les points d'accès API
 WHISPER_ENDPOINT = 'https://api.openai.com/v1/audio/transcriptions'
 CHATGPT_ENDPOINT = 'https://api.openai.com/v1/completions'
-Audio_path = 'C:/Users/Bruno/OneDrive/0Bruno - DigUp/00 -  DigUp/04 - eCommerce/07 - Automatisation produits/RECORDING_20230529_144958582.m4a.mp3'
+# Audio_path = 'C:/Users/Bruno/OneDrive/0Bruno - DigUp/00 -  DigUp/04 - eCommerce/07 - Automatisation produits/RECORDING_20230529_144958582.m4a.mp3'
 
 
         
