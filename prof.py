@@ -13,6 +13,8 @@ import requests
 from gtts import gTTS
 from io import BytesIO
 from datetime import datetime
+import sys
+sys.stdout.reconfigure(line_buffering=True)
 
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
