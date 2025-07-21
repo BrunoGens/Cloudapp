@@ -12,7 +12,7 @@ from io import BytesIO
 from datetime import datetime, timedelta
 import os
 import json
-import azure.cognitiveservices.speech as speechsdk
+#import azure.cognitiveservices.speech as speechsdk
 from google.cloud import texttospeech
 from FichesConversation import FichesConvers
 import subprocess
