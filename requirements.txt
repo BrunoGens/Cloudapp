@@ -6,3 +6,4 @@ python-dotenv
 gtts
 whisper
 google-cloud-storage
+google-cloud-texttospeech
