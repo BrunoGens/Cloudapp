@@ -13,18 +13,55 @@ import requests
 from gtts import gTTS
 from io import BytesIO
 from datetime import datetime
+import sys
+from google.cloud import storage
+import logging
 
+sys.stdout.reconfigure(line_buffering=True)
+
+BUCKET_NAME = "prof_lang_memory_bucket"
+FICHIER = "FichierTest.txt"
+
+def upload_text(content, fichier):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+    blob.upload_from_string(content)
+
+def download_text(fichier):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+    if not blob.exists():
+        return ""
+    return blob.download_as_text()
+
+def append_text_to_file(fichier: str, new_content: str):
+    client = storage.Client()
+    bucket = client.bucket(BUCKET_NAME)
+    blob = bucket.blob(fichier)
+
+    # Télécharger l'ancien contenu s'il existe
+    if blob.exists():
+        old_content = blob.download_as_text()
+    else:
+        old_content = ""
+
+    # Ajouter le nouveau contenu à la fin
+    updated_content = old_content + new_content
+
+    # Réécrire le fichier avec le contenu mis à jour
+    blob.upload_from_string(updated_content)
 # Charger les variables d'environnement depuis le fichier .env
 load_dotenv()
 
-# Clé API OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
 
-# Clé d'authentification de l'API WhatsApp
-WA_ACCESS_TOKEN = os.getenv('GRAPH_API_TOKEN')
-VERIFY_TOKEN = os.getenv('WEBHOOK_VERIFY_TOKEN')
-business_phone_number_id = os.getenv('BUSINESS_PHONE_NUMBER_ID')
-WHATSAPP_API_TOKEN = os.getenv('GRAPH_API_TOKEN')
+# Variables globales provenant des variables d'environnement
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+WHATSAPP_API_TOKEN  = os.getenv("WHATSAPP_TOKEN")
+VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
+business_phone_number_id = os.getenv("PHONE_NUMBER_ID")
+
 WHATSAPP_API_URL = f"https://graph.facebook.com/v18.0/{business_phone_number_id}/messages"
 
 
@@ -36,13 +73,16 @@ def sauvegarder_audio(texte, chemin_fichier):
     tts.save(chemin_fichier)
     print(f"Le fichier audio a été enregistré à l'emplacement : {chemin_fichier}")
 
-# Exemple d’utilisation
-texte_italien = "Ciao, come stai? Questo è un test audio."  # Texte d'exemple en italien
 
-sampleitalie2n = "https://1drv.ms/u/c/7afea6f61eaedb93/EYtHtBn1s49PhpaxYzG-qM0BI4bnWVToIx5585VhQ2VC5g?e=Lf85W1"
-#sampleitalien = "C:/Users/Bruno/OneDrive/0Bruno - DigUp/00 -  DigUp/04 - eCommerce/07 - Automatisation produits/02 - Product files/-Italiano-2024-11-08_18-56-23.mp3"
+# Configuration OpenAI
+openai.api_key = OPENAI_API_KEY
 
+# Flask app
 app = Flask(__name__)
+
+# Logger basique (améliorable)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def mark_as_read(message_id):
     access_token = WHATSAPP_API_TOKEN  # Remplacez par votre token d'accès
@@ -133,7 +173,7 @@ def envoyer_texte_whatsapp(numero, message):
 def uploader_audio_sur_facebook(audio_content):
     url_upload = f"https://graph.facebook.com/v18.0/{business_phone_number_id}/media"
     headers = {
-        'Authorization': f'Bearer {WA_ACCESS_TOKEN}'
+        'Authorization': f'Bearer {WHATSAPP_API_TOKEN}'
     }
     files = {
         'file': ('contenuaudio.mp3', BytesIO(audio_content), 'audio/mpeg')  # Utiliser BytesIO pour simuler un fichier
@@ -273,8 +313,14 @@ def conversation_italien(audio_url):
     tts.write_to_fp(audio_buffer)  # Écriture directe dans le buffer
     audio_buffer.seek(0)  # Revenir au début du buffer pour la lecture
 
-    # chemin_fichier = f"{rep}-Italiano-{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mp3"  # Spécifiez ici l'emplacement souhaité
-    # tts.save(chemin_fichier)
+    # chemin_fichier = "FichierTest" # Spécifiez ici l'emplacement souhaité  
+    print(f"Contenu fichier Test : {download_text(FICHIER)}")
+    text = f"{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')} - {italian_response}"  # Spécifiez ici l'emplacement souhaité
+    print(f"Ajout du texte : {text}")
+    append_text_to_file(FICHIER, text)
+    
+    print(f"nouveau Contenu fichier Test : {download_text(FICHIER)}")
+
     # print(f"Le fichier audio a été enregistré à l'emplacement : {chemin_fichier}")
     
     # Retourner la transcription et le contenu audio généré
@@ -297,32 +343,15 @@ def verify_webhook():
 
     if mode and token:
         if mode == "subscribe" and token == VERIFY_TOKEN:
-            message = f"Webhook vérifié avec succès. Challenge: {challenge}"
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 200
+            print("Webhook vérifié avec succès")
+            return challenge, 200, {'Content-Type': 'text/plain'}  # Assurez-vous de renvoyer le challenge tel quel
         else:
-            message = "Échec de vérification du webhook : token incorrect."
-            print(message)
-            return f"<html><body><h1>{message}</h1></body></html>", 403
+            print("Échec de vérification du webhook")
+            return "Forbidden", 403
     else:
-        message = "Paramètres manquants dans la requête."
-        print(message)
-        return f"<html><body><h1>{message}</h1></body></html>", 400
-# def verify_webhook():
-#     mode = request.args.get("hub.mode")
-#     token = request.args.get("hub.verify_token")
-#     challenge = request.args.get("hub.challenge")
+        print("Paramètres manquants dans la requête")
+        return "Bad Request", 400
 
-#     if mode and token:
-#         if mode == "subscribe" and token == VERIFY_TOKEN:
-#             print("Webhook vérifié avec succès")
-#             return f"Webhook vérifié avec succès. Challenge: {challenge}", 200
-#         else:
-#             print("Échec de vérification du webhook")
-#             return "Échec de vérification du webhook : token incorrect.", 403
-#     else:
-#         print("Paramètres manquants dans la requête")
-#         return "Paramètres manquants dans la requête.", 400
 
     
 @app.route('/webhook', methods=['POST'])
@@ -332,7 +361,7 @@ def webhook():
         
         # Vérifier si 'messages' est présent dans le payload
         if 'messages' not in data['entry'][0]['changes'][0]['value']:
- #           print("Pas de 'messages' dans la structure 'value', événement ignoré.")
+            print("Pas de 'messages' dans la structure 'value', événement ignoré.")
 #            print(f"Data : {data}")
             return "Événement ignoré", 200
 
@@ -363,7 +392,7 @@ def webhook():
 
         try:
             message = data['entry'][0]['changes'][0]['value']['messages'][0]
-            
+            audio_url = None
             # Vérifier que le type du message est bien "audio"
             if message.get('type') == 'audio':
                 audio_id = message['audio']['id']

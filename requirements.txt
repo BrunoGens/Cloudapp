@@ -1,6 +1,8 @@
 Flask==2.3.2
-python-dotenv
+gunicorn
 openai
 requests
-gTTS
+python-dotenv
+gtts
+whisper
 google-cloud-storage
