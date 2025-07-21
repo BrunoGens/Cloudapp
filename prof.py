@@ -18,7 +18,8 @@ from datetime import datetime
 load_dotenv()
 
 # Clé API OpenAI
-openai.api_key = os.getenv('OPENAI_API_KEY')
+# openai.api_key 
+OPENAI_API_KEY= os.getenv('OPENAI_API_KEY')
 
 # Clé d'authentification de l'API WhatsApp
 WA_ACCESS_TOKEN = os.getenv('GRAPH_API_TOKEN')
