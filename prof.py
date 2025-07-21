@@ -332,7 +332,7 @@ def webhook():
         
         # Vérifier si 'messages' est présent dans le payload
         if 'messages' not in data['entry'][0]['changes'][0]['value']:
- #           print("Pas de 'messages' dans la structure 'value', événement ignoré.")
+            print("Pas de 'messages' dans la structure 'value', événement ignoré.")
 #            print(f"Data : {data}")
             return "Événement ignoré", 200
 
