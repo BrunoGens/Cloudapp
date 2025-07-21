@@ -360,7 +360,7 @@ def webhook():
 
         try:
             message = data['entry'][0]['changes'][0]['value']['messages'][0]
-            
+            audio_url = None
             # Vérifier que le type du message est bien "audio"
             if message.get('type') == 'audio':
                 audio_id = message['audio']['id']
