@@ -499,22 +499,37 @@ def read_discussion(stamp, phone_number):
         return ""
     return script_content
 
+# def add_to_context(entry,stamp, phone_number):
+#     file_path = get_file_path(stamp,phone_number)
+#     with open(file_path, 'a+', encoding='utf-8') as file:
+#         file.write(entry)
+#         file.write('\n')
+#  #(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Restart server - Memory = empty"   
+
 def add_to_context(entry,stamp, phone_number):
     file_path = get_file_path(stamp,phone_number)
-    with open(file_path, 'a+', encoding='utf-8') as file:
-        file.write(entry)
-        file.write('\n')
- #(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')} - Restart server - Memory = empty"   
+    content = entry + "\n"
+    append_text_to_file(file_path, content)
 
+# def log_prononciation_html(text, phone_number):
+#     # Chemin du fichier de sortie
+#     output_file_path = Chat_save_dir + "Prononciation_Assessment"+phone_number+".html"
+    
+#     # Sauvegarde du texte colorisé dans un fichier HTML
+#     with open(output_file_path, "a+", encoding="utf-8") as file:
+#         file.write(text)
+
+#     print(f"Résultat sauvegardé dans : {output_file_path}")    
+
+#     # Afficher le texte coloré dans un format HTML
+#     #print(colored_text)
 def log_prononciation_html(text, phone_number):
     # Chemin du fichier de sortie
     output_file_path = Chat_save_dir + "Prononciation_Assessment"+phone_number+".html"
     
-    # Sauvegarde du texte colorisé dans un fichier HTML
-    with open(output_file_path, "a+", encoding="utf-8") as file:
-        file.write(text)
+    append_text_to_file(output_file_path, text)
 
-    print(f"Résultat sauvegardé dans : {output_file_path}")    
+    print(f"Résultat prononciation sauvegardé dans : {output_file_path}")    
 
     # Afficher le texte coloré dans un format HTML
     #print(colored_text)
