@@ -210,8 +210,10 @@ def mark_as_read(message_id):
     response = requests.post(url, json=payload, headers=headers)
     if response.status_code == 200:
         print("Message marqué comme lu.")
+        return True
     else:
         print(f"Erreur lors du marquage du message comme lu : {response.status_code} - {response.text}")
+        return False
 
 # Dans la fonction webhook, après avoir extrait `phone_number` et `message_id` depuis `data`
 # Remplacez `phone_number_id` et `access_token` par vos identifiants
@@ -795,29 +797,14 @@ def webhook():
             message_id = data['entry'][0]['changes'][0]['value']['messages'][0]['id']
             print(f"Id du message: {message_id}")
             try:
-                mark_as_read(message_id)
-            except requests.exceptions.HTTPError as e:
-                response = e.response
-                try:
-                    error_json = response.json()
-                    error_type = error_json.get("error", {}).get("type", "")
-                    print(f"error type : {error_type}")
-                    error_message = error_json.get("error", {}).get("message", "")
-                    print(f"error message : {error_message}")
-                    if error_type == "OAuthException" or "Invalid parameter" in error_message:
-                        print("==> Pas les droits sur ce message.")
-                        return "Message ignoré", 200
-                except Exception:
-                    print("Erreur inconnue dans le parsing JSON d'erreur.")
-                raise
-            # except Exception as e:
-            #     error_msg = str(e)
-            #     print(f"Erreur lors du marquage du message comme lu : {error_msg}")
-            #     if 'OAuthException' in error_msg or 'Invalid parameter' in error_msg:
-            #         print("==> Pas les droits sur ce message, message ignoré ignoré car pas autorisé à le marquer comme lu.")
-            #         return "Message ignoré (mauvais adressage ?)", 200
+                flag = mark_as_read(message_id)
+                if flag == False: return "Message ignoré (mauvais adressage ?)", 200
+            except Exception as e:
+                error_msg = str(e)
+                print(f"Erreur lors du marquage du message comme lu : {error_msg}")
         except Exception as g:
             print(f"Exception {g} : unable to read message's id")
+            return "Message ignoré (IP illisble)", 200
 
 
 
