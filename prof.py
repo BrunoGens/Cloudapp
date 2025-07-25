@@ -676,7 +676,56 @@ try :
     with open(log_msg_id_file, 'r') as file:
         Messages_id = [line.split()[1] for line in file]
 except Exception as e:
-    print (f"fichier {log_msg_id_file} non trouvé, Messages_id =[]")        
+    print (f"fichier {log_msg_id_file} non trouvé, Messages_id =[]")   
+
+def log_debug_summary(source_label, data):
+    print(f"\n===== [{source_label}] Webhook reçu =====")
+    print(f"Timestamp: {datetime.now().isoformat()}")
+    print(f"User-Agent: {request.headers.get('User-Agent')}")
+    print(f"IP: {request.remote_addr}")
+
+    # Synthèse structurée
+    try:
+        value = data['entry'][0]['changes'][0]['value']
+        msg_list = value.get('messages')
+        statuses = value.get('statuses')
+        if msg_list:
+            msg = msg_list[0]
+            msg_type = msg.get('type', 'unknown')
+            msg_id = msg.get('id', 'no_id')
+            print(f"Type de message : {msg_type}")
+            print(f"ID du message : {msg_id}")
+
+            if msg_type == 'text':
+                text = msg.get('text', {}).get('body', '')
+                print(f"Contenu (texte) : {text[:50]}...")
+
+            elif msg_type == 'button':
+                payload = msg.get('button', {}).get('payload', '')
+                print(f"Payload (bouton) : {payload[:50]}...")
+
+            elif msg_type == 'interactive':
+                inter = msg.get('interactive', {})
+                payload = inter.get('button_reply', {}).get('id') or inter.get('list_reply', {}).get('id')
+                print(f"Payload (interactive) : {payload[:50] if payload else 'None'}")
+
+            elif msg_type == 'image':
+                media_id = msg.get('image', {}).get('id', '')
+                caption = msg.get('image', {}).get('caption', '')
+                print(f"Image ID: {media_id}")
+                print(f"Légende : {caption[:50]}...")
+
+            else:
+                print(f"Type de message non traité : {msg_type}")
+
+        elif statuses:
+            print("Événement de statut reçu")
+        else:
+            print("Aucun message ou statut trouvé dans 'value'.")
+
+    except Exception as e:
+        print(f"Erreur dans le résumé structuré : {e}")
+        print(f"Payload brut tronqué : {str(data)[:300]}...")     
 
 # --- Server webwook ---
 @app.route('/')
@@ -701,6 +750,7 @@ def webhook():
     global memory
     try:
         data = request.get_json()
+        log_debug_summary("HELLO", data)
 
         # if 'messages' not in data['entry'][0]['changes'][0]['value']:
         #     return "Événement ignoré", 200
