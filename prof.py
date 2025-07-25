@@ -801,8 +801,9 @@ def webhook():
                 try:
                     error_json = response.json()
                     error_type = error_json.get("error", {}).get("type", "")
+                    print(f"error type : {error_type}")
                     error_message = error_json.get("error", {}).get("message", "")
-            
+                    print(f"error message : {error_message}")
                     if error_type == "OAuthException" or "Invalid parameter" in error_message:
                         print("==> Pas les droits sur ce message.")
                         return "Message ignoré", 200
