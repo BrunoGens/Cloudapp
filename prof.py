@@ -487,6 +487,7 @@ def get_file_path(stamp, phone_number):
     # print (f"File path ({stamp}: {file_path}")
     # print ("coucou")
     return file_path
+
 def read_discussion(stamp, phone_number):
     file_path = get_file_path(stamp, phone_number)
     if os.path.exists(file_path):
@@ -793,9 +794,20 @@ def webhook():
         try:
             message_id = data['entry'][0]['changes'][0]['value']['messages'][0]['id']
             print(f"Id du message: {message_id}")
-            mark_as_read(message_id)
+            try:
+                mark_as_read(message_id)
+            except Exception as e:
+                error_msg = str(e)
+                print(f"Erreur lors du marquage du message comme lu : {error_msg}")
+                if 'OAuthException' in error_msg or 'Invalid parameter' in error_msg:
+                    print("==> Pas les droits sur ce message, message ignoré ignoré car pas autorisé à le marquer comme lu.")
+                    return "Message ignoré (mauvais adressage ?)", 200
         except Exception as g:
             print(f"Exception {g} : unable to read message's id")
+
+
+
+
             
         try:
             timestamp_str = data['entry'][0]['changes'][0]['value']['messages'][0]["timestamp"]  # e.g., "1712607227"
@@ -817,9 +829,9 @@ def webhook():
                 print(f"Message {message_id} déjà reçu, >> ignoré")
                 return "Message déjà reçu", 200
             else:
-                with open(log_msg_id_file, 'a') as file:
-                    timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    file.write(f"{timestamp} {message_id}\n")
+                # with open(log_msg_id_file, 'a') as file:
+                #     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                #     file.write(f"{timestamp} {message_id}\n")
                 Messages_id.append(message_id)
         except Exception as g:
             print(f"Exception {g} : unable to read message's id")
