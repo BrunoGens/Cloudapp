@@ -702,38 +702,17 @@ def webhook():
     try:
         data = request.get_json()
 
-        # if 'messages' not in data['entry'][0]['changes'][0]['value']:
-        #     return "Événement ignoré", 200
+        if 'messages' not in data['entry'][0]['changes'][0]['value']:
+            return "Événement ignoré", 200
 
-        # if 'entry' not in data or not data['entry'][0].get('changes'):
-        #     print("Structure inattendue du webhook.")
-        #     return "Événement ignoré", 200
+        if 'entry' not in data or not data['entry'][0].get('changes'):
+            print("Structure inattendue du webhook.")
+            return "Événement ignoré", 200
 
-        # if 'statuses' in data['entry'][0]['changes'][0]['value']:
-        #     print("Événement de statut reçu, ignorer...")
-        #     return "Événement ignoré", 200
-        if not data or not isinstance(data, dict) or 'entry' not in data:
-            print(f"Webhook ignoré : bruit ou ping - data = {data}")
-            return "Événement ignoré (bruit)", 200
+        if 'statuses' in data['entry'][0]['changes'][0]['value']:
+            print("Événement de statut reçu, ignorer...")
+            return "Événement ignoré", 200
 
-        changes = data['entry'][0].get('changes', [])
-        if not changes:
-            print("Pas de 'changes' dans le message, probablement un bruit")
-            return "Événement ignoré (pas de changement)", 200
-
-        value = changes[0].get('value', {})
-        
-        # Statuts (accusés de réception par ex.)
-        if 'statuses' in value:
-            print("Statut reçu, non traité")
-            return "Statut ignoré", 200
-
-        # Aucun message réel
-        if 'messages' not in value:
-            print("Pas de messages présents, bruit")
-            return "Aucun message à traiter", 200
-
- 
         try:
             phone_number = data['entry'][0]['changes'][0]['value']['messages'][0]['from']
             print(f"Numéro de téléphone: {phone_number}")
