@@ -796,12 +796,25 @@ def webhook():
             print(f"Id du message: {message_id}")
             try:
                 mark_as_read(message_id)
-            except Exception as e:
-                error_msg = str(e)
-                print(f"Erreur lors du marquage du message comme lu : {error_msg}")
-                if 'OAuthException' in error_msg or 'Invalid parameter' in error_msg:
-                    print("==> Pas les droits sur ce message, message ignoré ignoré car pas autorisé à le marquer comme lu.")
-                    return "Message ignoré (mauvais adressage ?)", 200
+            except requests.exceptions.HTTPError as e:
+                response = e.response
+                try:
+                    error_json = response.json()
+                    error_type = error_json.get("error", {}).get("type", "")
+                    error_message = error_json.get("error", {}).get("message", "")
+            
+                    if error_type == "OAuthException" or "Invalid parameter" in error_message:
+                        print("==> Pas les droits sur ce message.")
+                        return "Message ignoré", 200
+                except Exception:
+                    print("Erreur inconnue dans le parsing JSON d'erreur.")
+                raise
+            # except Exception as e:
+            #     error_msg = str(e)
+            #     print(f"Erreur lors du marquage du message comme lu : {error_msg}")
+            #     if 'OAuthException' in error_msg or 'Invalid parameter' in error_msg:
+            #         print("==> Pas les droits sur ce message, message ignoré ignoré car pas autorisé à le marquer comme lu.")
+            #         return "Message ignoré (mauvais adressage ?)", 200
         except Exception as g:
             print(f"Exception {g} : unable to read message's id")
 
