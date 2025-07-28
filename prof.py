@@ -770,16 +770,6 @@ def webhook():
         data = request.get_json()
         log_debug_summary("HELLO", data)
 
-        # if 'messages' not in data['entry'][0]['changes'][0]['value']:
-        #     return "Événement ignoré", 200
-
-        # if 'entry' not in data or not data['entry'][0].get('changes'):
-        #     print("Structure inattendue du webhook.")
-        #     return "Événement ignoré", 200
-
-        # if 'statuses' in data['entry'][0]['changes'][0]['value']:
-        #     print("Événement de statut reçu, ignorer...")
-        #     return "Événement ignoré", 200
         if not data or not isinstance(data, dict) or 'entry' not in data:
             print(f"Webhook ignoré : bruit ou ping - data = {data}")
             return "Événement ignoré (bruit)", 200
