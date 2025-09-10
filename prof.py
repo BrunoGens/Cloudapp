@@ -690,7 +690,7 @@ def conversation(lingua, audio_url, phone_number):
         return "", audio_response
        
 #    prompt = f"Agis comme un professeur de {langue_nom}. Ton but est d'avoir une conversation avec moi : {reformulation}"
-    prompt = f"Ton but est d'avoir une conversation naturelle avec moi en {langue_nom}, adaptée à mon niveau, et d’introduire progressivement de nouveaux thèmes variés (vie quotidienne, actualité, culture, situations pratiques). Évite de répéter les mêmes sujets. Pose-moi des questions ouvertes et rebondis sur mes réponses."
+    prompt = f"Ton but est d'avoir une conversation naturelle avec moi en {langue_nom}, adaptée à mon niveau, et d’introduire progressivement de nouveaux thèmes variés (vie quotidienne, actualité, culture, situations pratiques). voici ce que je viens de dire : {reformulation} Évite de répéter les mêmes sujets. Pose-moi des questions ouvertes et rebondis sur mes réponses."
     response = analyze_caption_with_chatgpt(prompt, content=Context)
 #    print("coucou test1")
 
