@@ -50,6 +50,7 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 WHATSAPP_API_TOKEN  = os.getenv("WHATSAPP_TOKEN")
 VERIFY_TOKEN = os.getenv("VERIFY_TOKEN")
 business_phone_number_id = os.getenv("PHONE_NUMBER_ID")
+PROMPT_CONVERSATION = os.getenv("PROMPT_CONVERSATION")
 
 WHATSAPP_API_URL = f"https://graph.facebook.com/v18.0/{business_phone_number_id}/messages"
 
@@ -677,6 +678,7 @@ def conversation(lingua, audio_url, phone_number):
 
 
     prompt_reformul = f"renvoie moi la version correcte en {langue_nom} de : {transcription_text} (notamment si il y a des mots qui sont dits en française, traduis-les. juste la phrase corrigée, n'ajoute rien d'autre avant et après)"
+#    Context = f"Voici mes précédents messages dans cette conversation : \n {read_discussion('REFORMUL', phone_number)}\n et voici une liste de sujets de conversation possibles {FichesConvers}"
     Context = f"Voici mes précédents messages dans cette conversation : \n {read_discussion('REFORMUL', phone_number)}\n et voici une liste de sujets de conversation possibles {FichesConvers}"
     reformulation = analyze_caption_with_chatgpt(prompt_reformul)
 
@@ -687,7 +689,8 @@ def conversation(lingua, audio_url, phone_number):
         audio_response = synthesize_with_google(transcription_text, google_voice_name, google_language_code,speaking_rate=0.7 )
         return "", audio_response
        
-    prompt = f"Agis comme un professeur de {langue_nom}. Ton but est d'avoir une conversation avec moi : {reformulation}"
+#    prompt = f"Agis comme un professeur de {langue_nom}. Ton but est d'avoir une conversation avec moi : {reformulation}"
+    prompt = f"Ton but est d'avoir une conversation naturelle avec moi en {langue_nom}, adaptée à mon niveau, et d’introduire progressivement de nouveaux thèmes variés (vie quotidienne, actualité, culture, situations pratiques). Évite de répéter les mêmes sujets. Pose-moi des questions ouvertes et rebondis sur mes réponses."
     response = analyze_caption_with_chatgpt(prompt, content=Context)
 #    print("coucou test1")
 
