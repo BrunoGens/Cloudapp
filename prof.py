@@ -623,7 +623,7 @@ def recontact_users():
         last_interaction = user_data.get('last_interaction', today)
         lingua = user_data.get('lingua', "italien")
         days_since_last_interaction = (today - last_interaction).days
-
+        print(f"days since last interaction = {days_since_last_interaction}")
         if days_since_last_interaction >= NB_DAYS:  
             catchup_message = langues[lingua]['catchup_phrase']
             envoyer_texte_whatsapp(phone_number, catchup_message)
@@ -968,6 +968,7 @@ if __name__ == '__main__':
     print ("Maintenance mode: ", MaintenanceMode)
     load_memory()
 #    print(memory)
+    recontact_users()
     app.run(host='0.0.0.0', port=8080)
 
 
