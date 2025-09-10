@@ -621,6 +621,18 @@ def recontact_users():
         if (phone_number not in restricted_list):
             continue
         last_interaction = user_data.get('last_interaction', today)
+        last_interaction_str = user_data.get('last_interaction')
+        if last_interaction_str:
+            try:
+                # conversion string -> datetime (si ton format reste identique)
+                last_interaction = datetime.strptime(last_interaction_str, "%Y-%m-%d %H:%M:%S")
+            except ValueError:
+                print(f"⚠️ Format invalide pour {last_interaction_str}, on ignore")
+                last_interaction = today
+        else:
+            last_interaction = today
+
+
         lingua = user_data.get('lingua', "italien")
         days_since_last_interaction = (today - last_interaction).days
         print(f"days since last interaction = {days_since_last_interaction}")
