@@ -1,0 +1,9 @@
+Flask==2.3.2
+gunicorn
+openai
+requests
+python-dotenv
+gtts
+whisper
+google-cloud-storage
+google-cloud-texttospeech
