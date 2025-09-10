@@ -614,8 +614,9 @@ def log_prononciation_html(text, phone_number):
 # --- Fonction de recontact via WhatsApp ---
 def recontact_users():
     today = datetime.now()
-    NB_DAYS=1 # Par exemple, recontacter après X jours d'inactivité
+    NB_DAYS=0 # Par exemple, recontacter après X jours d'inactivité
     restricted_list = ['33633861297']
+    print("Scan la base de numéros pour recontacte")
     for phone_number, user_data in memory.items():
         if (phone_number not in restricted_list):
             continue
@@ -623,7 +624,7 @@ def recontact_users():
         lingua = user_data.get('lingua', "italien")
         days_since_last_interaction = (today - last_interaction).days
 
-        if days_since_last_interaction > NB_DAYS:  
+        if days_since_last_interaction >= NB_DAYS:  
             catchup_message = langues[lingua]['catchup_phrase']
             envoyer_texte_whatsapp(phone_number, catchup_message)
             
