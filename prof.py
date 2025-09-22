@@ -253,7 +253,7 @@ def envoyer_texte_whatsapp(numero, message):
         "text": {"body": message}
     }
     response = requests.post(WHATSAPP_API_URL, headers=headers, json=data)
-    memory[numero]['last_interaction'] = True
+    memory[numero]['last_interaction'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
     # response.raise_for_status()  # Vérifier que la requête a réussi
 
