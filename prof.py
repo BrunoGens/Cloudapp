@@ -763,7 +763,7 @@ def verify_webhook():
 # --- Fonction de recontact via WhatsApp ---
 def recontact_users():
     today = datetime.now()
-    NB_DAYS=0 # Par exemple, recontacter après X jours d'inactivité
+    NB_DAYS=2 # Par exemple, recontacter après X jours d'inactivité
     restricted_list = ['33633861297']
     print("Scan la base de numéros pour recontacte")
     for phone_number, user_data in memory.items():
